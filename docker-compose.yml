@@ -1,0 +1,61 @@
+# Local dev via the shared Traefik proxy (docker-devtools) → https://rails-template.test
+# Uses the Postgres on the Mac; gems live in the "bundle" volume (Linux builds).
+# 127.0.0.1:3099 stays published for the Android emulator (http://10.0.2.2:3099).
+x-app: &app
+  build:
+    context: .
+    dockerfile_inline: |
+      FROM docker.io/library/ruby:4.0.1-slim
+      RUN apt-get update -qq && apt-get install --no-install-recommends -y \
+            build-essential curl git libpq-dev libvips libyaml-dev pkg-config postgresql-client \
+          && rm -rf /var/lib/apt/lists/*
+      WORKDIR /rails
+  image: rails-template-dev
+  restart: unless-stopped
+  volumes:
+    - ./:/rails
+    - bundle:/usr/local/bundle
+  environment:
+    PGHOST: host.docker.internal
+    PGUSER: ${USER}
+    SMTP_HOST: mailpit
+
+services:
+  web:
+    <<: *app
+    command: sh -c "bundle install --quiet && bin/rails db:prepare && rm -f tmp/pids/server.pid && bin/rails server -b 0.0.0.0 -p 3000"
+    ports:
+      - "127.0.0.1:3099:3000"
+    healthcheck:
+      test: ["CMD", "curl", "-fs", "http://localhost:3000/up"]
+      interval: 5s
+      start_period: 5m
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.rails-template.loadbalancer.server.port=3000"
+      - "traefik.http.routers.rails-template.rule=Host(`rails-template.test`)"
+      - "traefik.http.routers.rails-template.entrypoints=websecure"
+      - "traefik.http.routers.rails-template.tls=true"
+    networks: [web]
+
+  # Tailwind apps only: delete this service otherwise.
+  css:
+    <<: *app
+    command: bin/rails tailwindcss:watch[always]
+    # Its own empty log/ and tmp/: web writes there every few seconds (healthcheck),
+    # which the watcher would take as a change and rebuild for, nonstop.
+    volumes:
+      - ./:/rails
+      - bundle:/usr/local/bundle
+      - /rails/log
+      - /rails/tmp
+    depends_on:
+      web:
+        condition: service_healthy
+
+volumes:
+  bundle:
+
+networks:
+  web:
+    external: true

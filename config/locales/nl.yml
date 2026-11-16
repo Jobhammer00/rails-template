@@ -1,0 +1,58 @@
+nl:
+  app:
+    name: Rails Template
+  nav:
+    dashboard: Dashboard
+    settings: Instellingen
+    sign_out: Uitloggen
+  sessions:
+    invalid: Dit e-mailadres en wachtwoord horen niet bij elkaar. Probeer het opnieuw.
+    rate_limited: Te veel pogingen. Probeer het over een paar minuten opnieuw.
+    new:
+      title: Inloggen
+      email_address: E-mailadres
+      password: Wachtwoord
+      submit: Inloggen
+      forgot_password: Wachtwoord vergeten?
+  passwords:
+    sent: Als dit e-mailadres bij ons bekend is, staat er een mail klaar om je wachtwoord opnieuw in te stellen.
+    reset: Je wachtwoord is opnieuw ingesteld. Log in met je nieuwe wachtwoord.
+    mismatch: De twee wachtwoorden zijn niet gelijk.
+    invalid_token: Deze link is ongeldig of verlopen. Vraag een nieuwe aan.
+    new:
+      title: Wachtwoord vergeten
+      description: Vul je e-mailadres in, dan sturen we je een link om een nieuw wachtwoord te kiezen.
+      submit: Stuur de link
+      back: Terug naar inloggen
+    edit:
+      title: Nieuw wachtwoord
+      password: Nieuw wachtwoord
+      password_confirmation: Herhaal je nieuwe wachtwoord
+      submit: Opslaan
+  passwords_mailer:
+    reset:
+      subject: Kies een nieuw wachtwoord
+      body: Via deze link kies je een nieuw wachtwoord. De link is %{expires_in} geldig.
+      link: Nieuw wachtwoord kiezen
+  dashboards:
+    show:
+      title: Dashboard
+      welcome: Je bent ingelogd als %{email_address}.
+  settings:
+    updated: Je wachtwoord is gewijzigd.
+    show:
+      title: Instellingen
+      password:
+        title: Wachtwoord
+        description: Vul je huidige wachtwoord in en kies een nieuw.
+        current: Huidig wachtwoord
+        new: Nieuw wachtwoord
+        confirmation: Herhaal je nieuwe wachtwoord
+        submit: Wachtwoord wijzigen
+  activerecord:
+    attributes:
+      user:
+        email_address: E-mailadres
+        password: Nieuw wachtwoord
+        password_challenge: Huidig wachtwoord
+        password_confirmation: Herhaling van je nieuwe wachtwoord

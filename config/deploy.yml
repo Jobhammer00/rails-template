@@ -1,0 +1,75 @@
+# Deploys with Kamal: one arm64 host behind kamal-proxy with a Postgres accessory.
+# The host comes from .env (see .env.example), the secrets from 1Password
+# (.kamal/secrets). Deploys run in GitHub Actions through the shared workflows in
+# Jobhammer00/deploy: a PR with a release label, Run workflow, or bin/deploy.
+service: rails-template
+# Lives in GitHub Container Registry as ghcr.io/jobhammer00/rails-template (lowercase required).
+image: jobhammer00/rails-template
+
+servers:
+  web:
+    - <%= ENV.fetch("HOST_IP_NAME") %>
+
+proxy:
+  ssl: true
+  # Behind Cloudflare, which sets X-Forwarded-For; with ssl on, kamal-proxy drops it
+  # unless told otherwise. Turn this off if the domain is not proxied by Cloudflare.
+  forward_headers: true
+  hosts:
+    - rails-template.example.nl
+
+registry:
+  server: ghcr.io
+  username: Jobhammer00
+  password:
+    - KAMAL_REGISTRY_PASSWORD
+
+builder:
+  arch: arm64
+  # Built natively on an arm64 runner (or an Apple silicon Mac), never on the server.
+  cache:
+    type: registry
+    options: mode=max
+
+env:
+  secret:
+    - RAILS_MASTER_KEY
+    - POSTGRES_PASSWORD
+  clear:
+    # Solid Queue runs inside Puma. Split it out to its own role with more than one server.
+    SOLID_QUEUE_IN_PUMA: true
+    WEB_CONCURRENCY: 2
+    RAILS_MAX_THREADS: 5
+    DB_HOST: rails-template-postgres
+    POSTGRES_USER: <%= ENV.fetch("POSTGRES_USER", "rails-template") %>
+    POSTGRES_DB: <%= ENV.fetch("POSTGRES_DB", "rails-template_production") %>
+
+aliases:
+  console: app exec --interactive --reuse "bin/rails console"
+  shell: app exec --interactive --reuse "bash"
+  logs: app logs -f
+  dbc: app exec --interactive --reuse "bin/rails dbconsole"
+
+volumes:
+  - "rails-template_storage:/rails/storage"
+
+# Keep the previous version's fingerprinted assets around during a deploy.
+asset_path: /rails/public/assets
+
+ssh:
+  user: ubuntu
+  keys:
+    - <%= ENV.fetch("KAMAL_SSH_KEY_PATH", "~/.ssh/<key>") %>
+
+accessories:
+  postgres:
+    image: postgres:15
+    host: <%= ENV.fetch("HOST_IP_NAME") %>
+    env:
+      clear:
+        POSTGRES_USER: <%= ENV.fetch("POSTGRES_USER", "rails-template") %>
+        POSTGRES_DB: <%= ENV.fetch("POSTGRES_DB", "rails-template_production") %>
+      secret:
+        - POSTGRES_PASSWORD
+    directories:
+      - data:/var/lib/postgresql/data

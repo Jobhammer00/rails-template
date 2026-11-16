@@ -1,0 +1,41 @@
+name: Release
+
+# Tags the next version, creates a GitHub Release, deploys that tag and (once Play
+# is set up) uploads the Android bundle, through the shared workflow in
+# Jobhammer00/deploy. The version is EPOCH.MAJOR.MINOR.PATCH, the tag the only place
+# it lives. Two ways in:
+#   - Merge a PR into main with the label `release: patch|minor|major|epoch`.
+#   - Actions → Release → Run workflow on main (or bin/deploy), choosing the bump.
+on:
+  pull_request:
+    types: [closed]
+  workflow_dispatch:
+    inputs:
+      bump:
+        description: Which part of the version goes up
+        type: choice
+        options: [patch, minor, major, epoch]
+        default: patch
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    uses: Jobhammer00/deploy/.github/workflows/release.yml@main
+    with:
+      bump: ${{ inputs.bump }}
+      op-item: rails-template-production
+      env: |
+        POSTGRES_USER=rails-template
+        POSTGRES_DB=rails-template_production
+      # Only for an app with an Android shell, once the Play service account and
+      # Firebase items exist in 1Password (see android.yml in Jobhammer00/deploy):
+      # android: >-
+      #   {"package": "nl.rails-template.app", "dir": "android",
+      #    "signing-prefix": "<APP>", "key-alias": "upload",
+      #    "keystore": "op://Deploy/rails-template-android-upload-key/rails-template-upload.jks",
+      #    "keystore-password": "op://Deploy/rails-template-android-upload-key/password",
+      #    "google-services": "op://Deploy/rails-template-firebase/google-services.json",
+      #    "play-service-account": "op://Deploy/play-service-account/credential.json"}
+    secrets: inherit
