@@ -1,0 +1,2 @@
+# Omakase Ruby styling for Rails. No custom overrides (rules/code-style.md).
+inherit_gem: { rubocop-rails-omakase: rubocop.yml }

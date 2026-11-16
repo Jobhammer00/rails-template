@@ -1,0 +1,17 @@
+name: CI
+
+# Lint, security and tests for a pull request, in one job through the shared workflow
+# in Jobhammer00/deploy. Only on pull requests: main changes through merged PRs,
+# which already passed, and a release only adds a tag. Require the check "ci / Lint,
+# security and tests" on main so a red PR cannot merge.
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+jobs:
+  ci:
+    uses: Jobhammer00/deploy/.github/workflows/ci.yml@main
+    with:
+      postgres: "15"
+      apt-packages: libpq-dev libvips
+      test: bin/rails db:test:prepare && bundle exec rspec

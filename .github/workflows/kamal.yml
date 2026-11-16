@@ -1,0 +1,25 @@
+name: Kamal
+
+# Runs a Kamal command against production (logs, rollback, app details, ...) through
+# the shared workflow in Jobhammer00/deploy. Deploys go through Release instead.
+on:
+  workflow_dispatch:
+    inputs:
+      command:
+        description: Kamal command to run
+        default: kamal app details
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  kamal:
+    uses: Jobhammer00/deploy/.github/workflows/kamal.yml@main
+    with:
+      command: ${{ inputs.command }}
+      op-item: rails-template-production
+      env: |
+        POSTGRES_USER=rails-template
+        POSTGRES_DB=rails-template_production
+    secrets: inherit

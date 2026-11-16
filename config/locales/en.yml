@@ -1,0 +1,58 @@
+en:
+  app:
+    name: Rails Template
+  nav:
+    dashboard: Dashboard
+    settings: Settings
+    sign_out: Sign out
+  sessions:
+    invalid: This email address and password do not match. Try again.
+    rate_limited: Too many attempts. Try again in a few minutes.
+    new:
+      title: Sign in
+      email_address: Email address
+      password: Password
+      submit: Sign in
+      forgot_password: Forgot your password?
+  passwords:
+    sent: If we know this email address, an email to reset your password is on its way.
+    reset: Your password has been reset. Sign in with your new password.
+    mismatch: The two passwords are not the same.
+    invalid_token: This link is invalid or has expired. Request a new one.
+    new:
+      title: Forgot password
+      description: Enter your email address and we will send you a link to choose a new password.
+      submit: Send the link
+      back: Back to sign in
+    edit:
+      title: New password
+      password: New password
+      password_confirmation: Repeat your new password
+      submit: Save
+  passwords_mailer:
+    reset:
+      subject: Choose a new password
+      body: Use this link to choose a new password. It is valid for %{expires_in}.
+      link: Choose a new password
+  dashboards:
+    show:
+      title: Dashboard
+      welcome: You are signed in as %{email_address}.
+  settings:
+    updated: Your password has been changed.
+    show:
+      title: Settings
+      password:
+        title: Password
+        description: Enter your current password and choose a new one.
+        current: Current password
+        new: New password
+        confirmation: Repeat your new password
+        submit: Change password
+  activerecord:
+    attributes:
+      user:
+        email_address: Email address
+        password: New password
+        password_challenge: Current password
+        password_confirmation: Repeat your new password
