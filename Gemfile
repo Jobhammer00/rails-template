@@ -72,4 +72,4 @@ group :development, :test do
 end
 gem "rails-i18n", "~> 8.0"
 # refract 1.1 (through phlex) uses Prism::MissingNode, which Prism 2 removed; drop this pin once refract supports Prism 2.
-gem "prism", "< 2"
+gem "prism", "< 3"
