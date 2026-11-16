@@ -12,7 +12,7 @@ Do these once, in the first PR, before the epics:
 
 1. `bin/rename <name_in_snake_case> <port>`: gives the app its own name everywhere and a free dev port (taken: see `docs/harnas/rules/dev-environment.md`).
 2. `bin/rails credentials:edit`: the template ships no credentials; this makes the app's own `config/credentials.yml.enc` and `config/master.key` (never committed).
-3. Fill in the theme tokens in `app/assets/tailwind/application.css` from the client's style (the design system from Route14), and replace this paragraph and `README.md` with what the app is.
+3. The theme lives in `app/assets/tailwind/theme.css` (and fonts in `public/fonts/`); Route14 fills it from the project's design system with a PR (`design:export`). Do not move tokens elsewhere, and replace this paragraph and `README.md` with what the app is.
 
 ## Commands
 
